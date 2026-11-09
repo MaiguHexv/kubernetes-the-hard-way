@@ -57,7 +57,7 @@ ssh root@node-0
 
 ```bash
 {
-  yum -y install socat conntrack ipset kmod
+  yum -y install socat conntrack ipset kmod iptables
 }
 ```
 
