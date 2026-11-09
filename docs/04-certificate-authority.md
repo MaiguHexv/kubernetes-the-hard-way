@@ -1,22 +1,22 @@
-# Provisioning a CA and Generating TLS Certificates
+# 创建 CA 并生成 TLS 证书
 
-In this lab you will provision a [PKI Infrastructure](https://en.wikipedia.org/wiki/Public_key_infrastructure) using openssl to bootstrap a Certificate Authority, and generate TLS certificates for the following components: kube-apiserver, kube-controller-manager, kube-scheduler, kubelet, and kube-proxy. The commands in this section should be run from the `jumpbox`.
+在本次实验中，你将使用 openssl 创建一套 [PKI 基础设施](https://en.wikipedia.org/wiki/Public_key_infrastructure)，用它来初始化一个证书颁发机构（Certificate Authority），并为以下组件生成 TLS 证书：kube-apiserver、kube-controller-manager、kube-scheduler、kubelet 和 kube-proxy。本节中的命令应在 `jumpbox` 上执行。
 
-## Certificate Authority
+## 证书颁发机构
 
-In this section you will provision a Certificate Authority that can be used to generate additional TLS certificates for the other Kubernetes components. Setting up CA and generating certificates using `openssl` can be time-consuming, especially when doing it for the first time. To streamline this lab, I've included an openssl configuration file `ca.conf`, which defines all the details needed to generate certificates for each Kubernetes component.
+在本节中，你将创建一套证书颁发机构，用于为其他 Kubernetes 组件生成额外的 TLS 证书。使用 `openssl` 搭建 CA 并生成证书可能比较耗时，尤其是第一次操作的时候。为简化本次实验，我准备了一个 openssl 配置文件 `ca.conf`，它定义了为每个 Kubernetes 组件生成证书所需的全部细节。
 
-Take a moment to review the `ca.conf` configuration file:
+花点时间看一下 `ca.conf` 配置文件：
 
 ```bash
 cat ca.conf
 ```
 
-You don't need to understand everything in the `ca.conf` file to complete this tutorial, but you should consider it a starting point for learning `openssl` and the configuration that goes into managing certificates at a high level.
+你不需要理解 `ca.conf` 文件中的所有内容也能完成本教程，但可以把它当作学习 `openssl` 以及从高层面上理解证书管理相关配置的起点。
 
-Every certificate authority starts with a private key and root certificate. In this section we are going to create a self-signed certificate authority, and while that's all we need for this tutorial, this shouldn't be considered something you would do in a real-world production environment.
+每个证书颁发机构都始于一个私钥和根证书。在本节中我们将创建一个自签名的证书颁发机构。虽然本教程只需要这么多，但在真实的生产环境中不应这样做。
 
-Generate the CA configuration file, certificate, and private key:
+生成 CA 配置文件、证书和私钥：
 
 ```bash
 {
@@ -28,17 +28,17 @@ Generate the CA configuration file, certificate, and private key:
 }
 ```
 
-Results:
+结果：
 
 ```txt
 ca.crt ca.key
 ```
 
-## Create Client and Server Certificates
+## 创建客户端和服务端证书
 
-In this section you will generate client and server certificates for each Kubernetes component and a client certificate for the Kubernetes `admin` user.
+在本节中，你将分别为每个 Kubernetes 组件生成客户端和服务端证书，并为 Kubernetes 的 `admin` 用户生成一个客户端证书。
 
-Generate the certificates and private keys:
+生成证书和私钥：
 
 ```bash
 certs=(
@@ -67,17 +67,17 @@ for i in ${certs[*]}; do
 done
 ```
 
-The results of running the above command will generate a private key, certificate request, and signed SSL certificate for each of the Kubernetes components. You can list the generated files with the following command:
+运行上述命令后，会为每个 Kubernetes 组件生成一个私钥、一个证书请求文件以及一个已签名的 SSL 证书。你可以用下面的命令列出生成的文件：
 
 ```bash
 ls -1 *.crt *.key *.csr
 ```
 
-## Distribute the Client and Server Certificates
+## 分发客户端和服务端证书
 
-In this section you will copy the various certificates to every machine at a path where each Kubernetes component will search for its certificate pair. In a real-world environment these certificates should be treated like a set of sensitive secrets as they are used as credentials by the Kubernetes components to authenticate to each other.
+在本节中，你会将各类证书复制到每台机器上，并放在各 Kubernetes 组件查找自己证书对的路径下。在真实环境中，这些证书应当被视为一组敏感机密，因为 Kubernetes 组件会把它们作为凭据，用于彼此之间的身份认证。
 
-Copy the appropriate certificates and private keys to the `node-0` and `node-1` machines:
+将相应的证书和私钥复制到 `node-0` 和 `node-1` 机器：
 
 ```bash
 for host in node-0 node-1; do
@@ -93,7 +93,7 @@ for host in node-0 node-1; do
 done
 ```
 
-Copy the appropriate certificates and private keys to the `server` machine:
+将相应的证书和私钥复制到 `server` 机器：
 
 ```bash
 scp \
@@ -103,6 +103,6 @@ scp \
   root@server:~/
 ```
 
-> The `kube-proxy`, `kube-controller-manager`, `kube-scheduler`, and `kubelet` client certificates will be used to generate client authentication configuration files in the next lab.
+> `kube-proxy`、`kube-controller-manager`、`kube-scheduler` 和 `kubelet` 的客户端证书将在下一个实验中用于生成客户端身份认证配置文件。
 
-Next: [Generating Kubernetes Configuration Files for Authentication](05-kubernetes-configuration-files.md)
+下一节：[生成用于身份认证的 Kubernetes 配置文件](05-kubernetes-configuration-files.md)

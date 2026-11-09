@@ -1,30 +1,30 @@
-# Generating the Data Encryption Config and Key
+# 生成数据加密配置和密钥
 
-Kubernetes stores a variety of data including cluster state, application configurations, and secrets. Kubernetes supports the ability to [encrypt](https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data) cluster data at rest.
+Kubernetes 存储着各种类型的数据，包括集群状态、应用配置和机密信息（Secrets）。Kubernetes 支持对集群静态数据进行[加密](https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data)。
 
-In this lab you will generate an encryption key and an [encryption config](https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/#understanding-the-encryption-at-rest-configuration) suitable for encrypting Kubernetes Secrets.
+在本实验中，你将生成一个加密密钥和一个[加密配置](https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/#understanding-the-encryption-at-rest-configuration)，用于加密 Kubernetes 的 Secrets。
 
-## The Encryption Key
+## 加密密钥
 
-Generate an encryption key:
+生成加密密钥：
 
 ```bash
 export ENCRYPTION_KEY=$(head -c 32 /dev/urandom | base64)
 ```
 
-## The Encryption Config File
+## 加密配置文件
 
-Create the `encryption-config.yaml` encryption config file:
+创建 `encryption-config.yaml` 加密配置文件：
 
 ```bash
 envsubst < configs/encryption-config.yaml \
   > encryption-config.yaml
 ```
 
-Copy the `encryption-config.yaml` encryption config file to each controller instance:
+将 `encryption-config.yaml` 加密配置文件复制到每一台 controller 实例上：
 
 ```bash
 scp encryption-config.yaml root@server:~/
 ```
 
-Next: [Bootstrapping the etcd Cluster](07-bootstrapping-etcd.md)
+下一节：[初始化 etcd 集群](07-bootstrapping-etcd.md)

@@ -1,16 +1,16 @@
-# Provisioning Pod Network Routes
+# 配置 Pod 网络路由
 
-Pods scheduled to a node receive an IP address from the node's Pod CIDR range. At this point pods can not communicate with other pods running on different nodes due to missing network [routes](https://cloud.google.com/compute/docs/vpc/routes).
+被调度到某个节点上的 Pod 会从该节点的 Pod CIDR 范围中获得一个 IP 地址。此时，由于缺少网络[路由](https://cloud.google.com/compute/docs/vpc/routes)，Pod 还无法与运行在其他节点上的 Pod 通信。
 
-In this lab you will create a route for each worker node that maps the node's Pod CIDR range to the node's internal IP address.
+在本节实验中，你将为每个工作节点创建一条路由，将节点的 Pod CIDR 范围映射到该节点的内部 IP 地址。
 
-> There are [other ways](https://kubernetes.io/docs/concepts/cluster-administration/networking/#how-to-achieve-this) to implement the Kubernetes networking model.
+> 还有[其他方式](https://kubernetes.io/docs/concepts/cluster-administration/networking/#how-to-achieve-this)可以实现 Kubernetes 的网络模型。
 
-## The Routing Table
+## 路由表
 
-In this section you will gather the information required to create routes in the `kubernetes-the-hard-way` VPC network.
+在本节中，你将收集在 `kubernetes-the-hard-way` VPC 网络中创建路由所需的信息。
 
-Print the internal IP address and Pod CIDR range for each worker instance:
+打印每个工作节点实例的内部 IP 地址和 Pod CIDR 范围：
 
 ```bash
 {
@@ -41,7 +41,7 @@ ssh root@node-1 <<EOF
 EOF
 ```
 
-## Verification 
+## 验证
 
 ```bash
 ssh root@server ip route
@@ -75,4 +75,4 @@ XXX.XXX.XXX.0/24 dev ens160 proto kernel scope link src XXX.XXX.XXX.XXX
 ```
 
 
-Next: [Smoke Test](12-smoke-test.md)
+下一节：[冒烟测试](12-smoke-test.md)

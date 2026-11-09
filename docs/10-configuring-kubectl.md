@@ -1,14 +1,14 @@
-# Configuring kubectl for Remote Access
+# 配置 kubectl 远程访问
 
-In this lab you will generate a kubeconfig file for the `kubectl` command line utility based on the `admin` user credentials.
+本实验将基于 `admin` 用户凭据，为 `kubectl` 命令行工具生成一个 kubeconfig 文件。
 
-> Run the commands in this lab from the `jumpbox` machine.
+> 请在 `jumpbox` 机器上运行本实验中的命令。
 
-## The Admin Kubernetes Configuration File
+## Admin 的 Kubernetes 配置文件
 
-Each kubeconfig requires a Kubernetes API Server to connect to.
+每个 kubeconfig 都需要连接一个 Kubernetes API Server。
 
-You should be able to ping `server.kubernetes.local` based on the `/etc/hosts` DNS entry from a previous lab.
+根据之前实验中配置的 `/etc/hosts` DNS 记录，你应该能够 ping 通 `server.kubernetes.local`。
 
 ```bash
 curl --cacert ca.crt \
@@ -29,7 +29,7 @@ curl --cacert ca.crt \
 }
 ```
 
-Generate a kubeconfig file suitable for authenticating as the `admin` user:
+生成一个用于以 `admin` 用户身份进行认证的 kubeconfig 文件：
 
 ```bash
 {
@@ -49,12 +49,12 @@ Generate a kubeconfig file suitable for authenticating as the `admin` user:
   kubectl config use-context kubernetes-the-hard-way
 }
 ```
-The results of running the command above should create a kubeconfig file in the default location `~/.kube/config` used by the  `kubectl` commandline tool. This also means you can run the `kubectl` command without specifying a config.
+执行上述命令后，会在 `kubectl` 命令行工具默认使用的位置 `~/.kube/config` 创建 kubeconfig 文件。这也意味着你无需指定配置文件即可运行 `kubectl` 命令。
 
 
-## Verification
+## 验证
 
-Check the version of the remote Kubernetes cluster:
+查看远程 Kubernetes 集群的版本：
 
 ```bash
 kubectl version
@@ -66,7 +66,7 @@ Kustomize Version: v5.5.0
 Server Version: v1.32.3
 ```
 
-List the nodes in the remote Kubernetes cluster:
+列出远程 Kubernetes 集群中的节点：
 
 ```bash
 kubectl get nodes
@@ -78,4 +78,4 @@ node-0   Ready    <none>   10m   v1.32.3
 node-1   Ready    <none>   10m   v1.32.3
 ```
 
-Next: [Provisioning Pod Network Routes](11-pod-network-routes.md)
+下一节：[配置 Pod 网络路由](11-pod-network-routes.md)

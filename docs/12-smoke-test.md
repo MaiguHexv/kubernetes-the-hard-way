@@ -1,19 +1,19 @@
-# Smoke Test
+# 冒烟测试
 
-In this lab you will complete a series of tasks to ensure your Kubernetes cluster is functioning correctly.
+在本节实验中，你将完成一系列任务，以确保你的 Kubernetes 集群运行正常。
 
-## Data Encryption
+## 数据加密
 
-In this section you will verify the ability to [encrypt secret data at rest](https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/#verifying-that-data-is-encrypted).
+在本节中，你将验证[静态加密 Secret 数据](https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/#verifying-that-data-is-encrypted)的能力。
 
-Create a generic secret:
+创建一个通用 Secret：
 
 ```bash
 kubectl create secret generic kubernetes-the-hard-way \
   --from-literal="mykey=mydata"
 ```
 
-Print a hexdump of the `kubernetes-the-hard-way` secret stored in etcd:
+打印存储在 etcd 中的 `kubernetes-the-hard-way` Secret 的十六进制转储（hexdump）：
 
 ```bash
 ssh root@server \
@@ -46,20 +46,20 @@ ssh root@server \
 0000015a
 ```
 
-The etcd key should be prefixed with `k8s:enc:aescbc:v1:key1`, which indicates the `aescbc` provider was used to encrypt the data with the `key1` encryption key.
+etcd 中的键应该以 `k8s:enc:aescbc:v1:key1` 作为前缀，这表明使用了 `aescbc` 提供程序和 `key1` 加密密钥对数据进行了加密。
 
-## Deployments
+## Deployment
 
-In this section you will verify the ability to create and manage [Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/).
+在本节中，你将验证创建和管理 [Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/) 的能力。
 
-Create a deployment for the [nginx](https://nginx.org/en/) web server:
+为 [nginx](https://nginx.org/en/) Web 服务器创建一个 Deployment：
 
 ```bash
 kubectl create deployment nginx \
   --image=nginx:latest
 ```
 
-List the pod created by the `nginx` deployment:
+列出 `nginx` Deployment 创建的 Pod：
 
 ```bash
 kubectl get pods -l app=nginx
@@ -70,18 +70,18 @@ NAME                     READY   STATUS    RESTARTS   AGE
 nginx-56fcf95486-c8dnx   1/1     Running   0          8s
 ```
 
-### Port Forwarding
+### 端口转发
 
-In this section you will verify the ability to access applications remotely using [port forwarding](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/).
+在本节中，你将验证使用[端口转发](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/)远程访问应用的能力。
 
-Retrieve the full name of the `nginx` pod:
+获取 `nginx` Pod 的完整名称：
 
 ```bash
 POD_NAME=$(kubectl get pods -l app=nginx \
   -o jsonpath="{.items[0].metadata.name}")
 ```
 
-Forward port `8080` on your local machine to port `80` of the `nginx` pod:
+将本地的 `8080` 端口转发到 `nginx` Pod 的 `80` 端口：
 
 ```bash
 kubectl port-forward $POD_NAME 8080:80
@@ -92,7 +92,7 @@ Forwarding from 127.0.0.1:8080 -> 80
 Forwarding from [::1]:8080 -> 80
 ```
 
-In a new terminal make an HTTP request using the forwarding address:
+在新开一个终端，使用转发地址发起 HTTP 请求：
 
 ```bash
 curl --head http://127.0.0.1:8080
@@ -110,7 +110,7 @@ ETag: "67a34638-267"
 Accept-Ranges: bytes
 ```
 
-Switch back to the previous terminal and stop the port forwarding to the `nginx` pod:
+切换回之前的终端，停止到 `nginx` Pod 的端口转发：
 
 ```text
 Forwarding from 127.0.0.1:8080 -> 80
@@ -119,11 +119,11 @@ Handling connection for 8080
 ^C
 ```
 
-### Logs
+### 日志
 
-In this section you will verify the ability to [retrieve container logs](https://kubernetes.io/docs/concepts/cluster-administration/logging/).
+在本节中，你将验证[获取容器日志](https://kubernetes.io/docs/concepts/cluster-administration/logging/)的能力。
 
-Print the `nginx` pod logs:
+打印 `nginx` Pod 的日志：
 
 ```bash
 kubectl logs $POD_NAME
@@ -136,9 +136,9 @@ kubectl logs $POD_NAME
 
 ### Exec
 
-In this section you will verify the ability to [execute commands in a container](https://kubernetes.io/docs/tasks/debug-application-cluster/get-shell-running-container/#running-individual-commands-in-a-container).
+在本节中，你将验证[在容器中执行命令](https://kubernetes.io/docs/tasks/debug-application-cluster/get-shell-running-container/#running-individual-commands-in-a-container)的能力。
 
-Print the nginx version by executing the `nginx -v` command in the `nginx` container:
+在 `nginx` 容器中执行 `nginx -v` 命令，打印 nginx 版本：
 
 ```bash
 kubectl exec -ti $POD_NAME -- nginx -v
@@ -148,27 +148,27 @@ kubectl exec -ti $POD_NAME -- nginx -v
 nginx version: nginx/1.27.4
 ```
 
-## Services
+## Service
 
-In this section you will verify the ability to expose applications using a [Service](https://kubernetes.io/docs/concepts/services-networking/service/).
+在本节中，你将验证使用 [Service](https://kubernetes.io/docs/concepts/services-networking/service/) 暴露应用的能力。
 
-Expose the `nginx` deployment using a [NodePort](https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport) service:
+使用 [NodePort](https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport) 类型的 Service 暴露 `nginx` Deployment：
 
 ```bash
 kubectl expose deployment nginx \
   --port 80 --type NodePort
 ```
 
-> The LoadBalancer service type can not be used because your cluster is not configured with [cloud provider integration](https://kubernetes.io/docs/getting-started-guides/scratch/#cloud-provider). Setting up cloud provider integration is out of scope for this tutorial.
+> 由于你的集群没有配置[云提供商集成](https://kubernetes.io/docs/getting-started-guides/scratch/#cloud-provider)，因此无法使用 LoadBalancer 类型的 Service。配置云提供商集成超出了本教程的范围。
 
-Retrieve the node port assigned to the `nginx` service:
+获取分配给 `nginx` Service 的节点端口：
 
 ```bash
 NODE_PORT=$(kubectl get svc nginx \
   --output=jsonpath='{range .spec.ports[0]}{.nodePort}')
 ```
 
-Retrieve the hostname of the node running the `nginx` pod:
+获取运行 `nginx` Pod 的节点的主机名：
 
 ```bash
 NODE_NAME=$(kubectl get pods \
@@ -176,7 +176,7 @@ NODE_NAME=$(kubectl get pods \
   -o jsonpath="{.items[0].spec.nodeName}")
 ```
 
-Make an HTTP request using the IP address and the `nginx` node port:
+使用该节点的 IP 地址和 `nginx` 的节点端口发起 HTTP 请求：
 
 ```bash
 curl -I http://${NODE_NAME}:${NODE_PORT}
@@ -193,4 +193,4 @@ ETag: "67a34638-267"
 Accept-Ranges: bytes
 ```
 
-Next: [Cleaning Up](13-cleanup.md)
+下一节：[清理工作](13-cleanup.md)

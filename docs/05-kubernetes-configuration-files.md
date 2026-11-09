@@ -1,18 +1,18 @@
-# Generating Kubernetes Configuration Files for Authentication
+# 生成用于认证的 Kubernetes 配置文件
 
-In this lab you will generate [Kubernetes client configuration files](https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/), typically called kubeconfigs, which configure Kubernetes clients to connect and authenticate to Kubernetes API Servers.
+在本实验中，你将生成 [Kubernetes 客户端配置文件](https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/)，通常称为 kubeconfig，用于配置 Kubernetes 客户端连接到 Kubernetes API Server 并完成身份认证。
 
-## Client Authentication Configs
+## 客户端认证配置
 
-In this section you will generate kubeconfig files for the `kubelet` and the `admin` user.
+在本节中，你将为 `kubelet` 和 `admin` 用户生成 kubeconfig 文件。
 
-### The kubelet Kubernetes Configuration File
+### kubelet 的 Kubernetes 配置文件
 
-When generating kubeconfig files for Kubelets the client certificate matching the Kubelet's node name must be used. This will ensure Kubelets are properly authorized by the Kubernetes [Node Authorizer](https://kubernetes.io/docs/reference/access-authn-authz/node/).
+在为 Kubelet 生成 kubeconfig 文件时，必须使用与该 Kubelet 节点名称相匹配的客户端证书。这样才能确保 Kubelet 被 Kubernetes [Node Authorizer](https://kubernetes.io/docs/reference/access-authn-authz/node/) 正确授权。
 
-> The following commands must be run in the same directory used to generate the SSL certificates during the [Generating TLS Certificates](04-certificate-authority.md) lab.
+> 以下命令必须在 [生成 TLS 证书](04-certificate-authority.md) 实验中生成 SSL 证书时所在的同一目录下运行。
 
-Generate a kubeconfig file for the `node-0` and `node-1` worker nodes:
+为 `node-0` 和 `node-1` 工作节点生成 kubeconfig 文件：
 
 ```bash
 for host in node-0 node-1; do
@@ -38,16 +38,16 @@ for host in node-0 node-1; do
 done
 ```
 
-Results:
+输出结果：
 
 ```text
 node-0.kubeconfig
 node-1.kubeconfig
 ```
 
-### The kube-proxy Kubernetes Configuration File
+### kube-proxy 的 Kubernetes 配置文件
 
-Generate a kubeconfig file for the `kube-proxy` service:
+为 `kube-proxy` 服务生成 kubeconfig 文件：
 
 ```bash
 {
@@ -73,15 +73,15 @@ Generate a kubeconfig file for the `kube-proxy` service:
 }
 ```
 
-Results:
+输出结果：
 
 ```text
 kube-proxy.kubeconfig
 ```
 
-### The kube-controller-manager Kubernetes Configuration File
+### kube-controller-manager 的 Kubernetes 配置文件
 
-Generate a kubeconfig file for the `kube-controller-manager` service:
+为 `kube-controller-manager` 服务生成 kubeconfig 文件：
 
 ```bash
 {
@@ -107,16 +107,16 @@ Generate a kubeconfig file for the `kube-controller-manager` service:
 }
 ```
 
-Results:
+输出结果：
 
 ```text
 kube-controller-manager.kubeconfig
 ```
 
 
-### The kube-scheduler Kubernetes Configuration File
+### kube-scheduler 的 Kubernetes 配置文件
 
-Generate a kubeconfig file for the `kube-scheduler` service:
+为 `kube-scheduler` 服务生成 kubeconfig 文件：
 
 ```bash
 {
@@ -142,15 +142,15 @@ Generate a kubeconfig file for the `kube-scheduler` service:
 }
 ```
 
-Results:
+输出结果：
 
 ```text
 kube-scheduler.kubeconfig
 ```
 
-### The admin Kubernetes Configuration File
+### admin 的 Kubernetes 配置文件
 
-Generate a kubeconfig file for the `admin` user:
+为 `admin` 用户生成 kubeconfig 文件：
 
 ```bash
 {
@@ -176,29 +176,29 @@ Generate a kubeconfig file for the `admin` user:
 }
 ```
 
-Results:
+输出结果：
 
 ```text
 admin.kubeconfig
 ```
 
-## Distribute the Kubernetes Configuration Files
+## 分发 Kubernetes 配置文件
 
-Copy the `kubelet` and `kube-proxy` kubeconfig files to the `node-0` and `node-1` machines:
+将 `kubelet` 和 `kube-proxy` 的 kubeconfig 文件复制到 `node-0` 和 `node-1` 机器上：
 
 ```bash
 for host in node-0 node-1; do
   ssh root@${host} "mkdir -p /var/lib/{kube-proxy,kubelet}"
 
   scp kube-proxy.kubeconfig \
-    root@${host}:/var/lib/kube-proxy/kubeconfig \
+    root@${host}:/var/lib/kube-proxy/kubeconfig
 
   scp ${host}.kubeconfig \
     root@${host}:/var/lib/kubelet/kubeconfig
 done
 ```
 
-Copy the `kube-controller-manager` and `kube-scheduler` kubeconfig files to the `server` machine:
+将 `kube-controller-manager` 和 `kube-scheduler` 的 kubeconfig 文件复制到 `server` 机器上：
 
 ```bash
 scp admin.kubeconfig \
@@ -207,4 +207,4 @@ scp admin.kubeconfig \
   root@server:~/
 ```
 
-Next: [Generating the Data Encryption Config and Key](06-data-encryption-keys.md)
+下一节：[生成数据加密配置和密钥](06-data-encryption-keys.md)

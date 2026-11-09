@@ -1,12 +1,12 @@
-# Bootstrapping the Kubernetes Worker Nodes
+# Kubernetes 工作节点
 
-In this lab you will bootstrap two Kubernetes worker nodes. The following components will be installed: [runc](https://github.com/opencontainers/runc), [container networking plugins](https://github.com/containernetworking/cni), [containerd](https://github.com/containerd/containerd), [kubelet](https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet), and [kube-proxy](https://kubernetes.io/docs/concepts/cluster-administration/proxies).
+本实验将引导两个 Kubernetes 工作节点。以下组件会被安装：[runc](https://github.com/opencontainers/runc)、[容器网络插件](https://github.com/containernetworking/cni)、[containerd](https://github.com/containerd/containerd)、[kubelet](https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet) 和 [kube-proxy](https://kubernetes.io/docs/concepts/cluster-administration/proxies)。
 
-## Prerequisites
+## 准备工作
 
-The commands in this section must be run from the `jumpbox`.
+本节的命令必须在 `jumpbox` 上运行。
 
-Copy the Kubernetes binaries and systemd unit files to each worker instance:
+将 Kubernetes 二进制文件和 systemd unit 文件复制到每个工作节点实例：
 
 ```bash
 for HOST in node-0 node-1; do
@@ -45,44 +45,43 @@ for HOST in node-0 node-1; do
 done
 ```
 
-The commands in the next section must be run on each worker instance: `node-0`, `node-1`. Login to the worker instance using the `ssh` command. Example:
+下一节的命令必须在每个工作节点实例上运行：`node-0`、`node-1`。使用 `ssh` 命令登录工作节点实例，例如：
 
 ```bash
 ssh root@node-0
 ```
 
-## Provisioning a Kubernetes Worker Node
+## 部署 Kubernetes 工作节点
 
-Install the OS dependencies:
+安装操作系统依赖：
 
 ```bash
 {
-  apt-get update
-  apt-get -y install socat conntrack ipset kmod
+  yum -y install socat conntrack ipset kmod
 }
 ```
 
-> The socat binary enables support for the `kubectl port-forward` command.
+> socat 二进制文件用于支持 `kubectl port-forward` 命令。
 
-Disable Swap
+禁用 Swap
 
-Kubernetes has limited support for the use of swap memory, as it is difficult to provide guarantees and account for pod memory utilization when swap is involved.
+Kubernetes 对 swap 内存的支持有限，因为在使用 swap 时，很难为 Pod 的内存使用提供保障并进行核算。
 
-Verify if swap is disabled:
+检查 swap 是否已禁用：
 
 ```bash
 swapon --show
 ```
 
-If output is empty then swap is disabled. If swap is enabled run the following command to disable swap immediately:
+如果输出为空，说明 swap 已禁用。如果 swap 已启用，运行以下命令立即禁用 swap：
 
 ```bash
 swapoff -a
 ```
 
-> To ensure swap remains off after reboot consult your Linux distro documentation.
+> 要确保重启后 swap 仍保持禁用，请查阅你所使用 Linux 发行版的文档。
 
-Create the installation directories:
+创建安装目录：
 
 ```bash
 mkdir -p \
@@ -94,7 +93,7 @@ mkdir -p \
   /var/run/kubernetes
 ```
 
-Install the worker binaries:
+安装工作节点二进制文件：
 
 ```bash
 {
@@ -105,15 +104,15 @@ Install the worker binaries:
 }
 ```
 
-### Configure CNI Networking
+### 配置 CNI 网络
 
-Create the `bridge` network configuration file:
+创建 `bridge` 网络配置文件：
 
 ```bash
 mv 10-bridge.conf 99-loopback.conf /etc/cni/net.d/
 ```
 
-To ensure network traffic crossing the CNI `bridge` network is processed by `iptables`, load and configure the `br-netfilter` kernel module:
+为了确保穿越 CNI `bridge` 网络的流量由 `iptables` 处理，加载并配置 `br-netfilter` 内核模块：
 
 ```bash
 {
@@ -132,9 +131,9 @@ To ensure network traffic crossing the CNI `bridge` network is processed by `ipt
 }
 ```
 
-### Configure containerd
+### 配置 containerd
 
-Install the `containerd` configuration files:
+安装 `containerd` 配置文件：
 
 ```bash
 {
@@ -144,9 +143,9 @@ Install the `containerd` configuration files:
 }
 ```
 
-### Configure the Kubelet
+### 配置 Kubelet
 
-Create the `kubelet-config.yaml` configuration file:
+创建 `kubelet-config.yaml` 配置文件：
 
 ```bash
 {
@@ -155,7 +154,7 @@ Create the `kubelet-config.yaml` configuration file:
 }
 ```
 
-### Configure the Kubernetes Proxy
+### 配置 Kubernetes Proxy
 
 ```bash
 {
@@ -164,7 +163,7 @@ Create the `kubelet-config.yaml` configuration file:
 }
 ```
 
-### Start the Worker Services
+### 启动工作节点服务
 
 ```bash
 {
@@ -174,7 +173,7 @@ Create the `kubelet-config.yaml` configuration file:
 }
 ```
 
-Check if the kubelet service is running:
+检查 kubelet 服务是否正在运行：
 
 ```bash
 systemctl is-active kubelet
@@ -184,13 +183,13 @@ systemctl is-active kubelet
 active
 ```
 
-Be sure to complete the steps in this section on each worker node, `node-0` and `node-1`, before moving on to the next section.
+在进入下一节之前，请务必在 `node-0` 和 `node-1` 这两个工作节点上完成本节的所有步骤。
 
-## Verification
+## 验证
 
-Run the following commands from the `jumpbox` machine.
+在 `jumpbox` 机器上运行以下命令。
 
-List the registered Kubernetes nodes:
+列出已注册的 Kubernetes 节点：
 
 ```bash
 ssh root@server \
@@ -204,4 +203,4 @@ node-0   Ready    <none>   1m     v1.32.3
 node-1   Ready    <none>   10s    v1.32.3
 ```
 
-Next: [Configuring kubectl for Remote Access](10-configuring-kubectl.md)
+下一节：[配置 kubectl 远程访问](10-configuring-kubectl.md)

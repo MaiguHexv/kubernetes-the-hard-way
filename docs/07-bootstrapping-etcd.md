@@ -1,10 +1,10 @@
-# Bootstrapping the etcd Cluster
+# 初始化 etcd 集群
 
-Kubernetes components are stateless and store cluster state in [etcd](https://github.com/etcd-io/etcd). In this lab you will bootstrap a single node etcd cluster.
+Kubernetes 组件本身是无状态的，它们将集群状态存储在 [etcd](https://github.com/etcd-io/etcd) 中。在本实验中，你将初始化一个单节点的 etcd 集群。
 
-## Prerequisites
+## 前提条件
 
-Copy `etcd` binaries and systemd unit files to the `server` machine:
+将 `etcd` 二进制文件和 systemd unit 文件复制到 `server` 机器上：
 
 ```bash
 scp \
@@ -14,17 +14,17 @@ scp \
   root@server:~/
 ```
 
-The commands in this lab must be run on the `server` machine. Login to the `server` machine using the `ssh` command. Example:
+本实验中的命令必须在 `server` 机器上运行。使用 `ssh` 命令登录到 `server` 机器，例如：
 
 ```bash
 ssh root@server
 ```
 
-## Bootstrapping an etcd Cluster
+## 初始化 etcd 集群
 
-### Install the etcd Binaries
+### 安装 etcd 二进制文件
 
-Extract and install the `etcd` server and the `etcdctl` command line utility:
+解压并安装 `etcd` 服务端和 `etcdctl` 命令行工具：
 
 ```bash
 {
@@ -32,7 +32,7 @@ Extract and install the `etcd` server and the `etcdctl` command line utility:
 }
 ```
 
-### Configure the etcd Server
+### 配置 etcd 服务端
 
 ```bash
 {
@@ -43,15 +43,15 @@ Extract and install the `etcd` server and the `etcdctl` command line utility:
 }
 ```
 
-Each etcd member must have a unique name within an etcd cluster. Set the etcd name to match the hostname of the current compute instance:
+每个 etcd 成员在 etcd 集群中必须拥有唯一的名称。将 etcd 的名称设置为与当前计算实例的主机名一致：
 
-Create the `etcd.service` systemd unit file:
+创建 `etcd.service` systemd unit 文件：
 
 ```bash
 mv etcd.service /etc/systemd/system/
 ```
 
-### Start the etcd Server
+### 启动 etcd 服务端
 
 ```bash
 {
@@ -61,9 +61,9 @@ mv etcd.service /etc/systemd/system/
 }
 ```
 
-## Verification
+## 验证
 
-List the etcd cluster members:
+列出 etcd 集群的成员：
 
 ```bash
 etcdctl member list
@@ -73,4 +73,4 @@ etcdctl member list
 6702b0a34e2cfd39, started, controller, http://127.0.0.1:2380, http://127.0.0.1:2379, false
 ```
 
-Next: [Bootstrapping the Kubernetes Control Plane](08-bootstrapping-kubernetes-controllers.md)
+下一节：[引导 Kubernetes 控制平面](08-bootstrapping-kubernetes-controllers.md)
